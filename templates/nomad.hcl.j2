@@ -1,0 +1,26 @@
+# {{ ansible_managed }}
+data_dir  = "/var/lib/nomad"
+
+bind_addr  = "{{ nomad_bind_address }}"
+region     = "{{ nomad_nomad_region }}"
+datacenter = "{{ nomad_nomad_datacenter }}"
+
+disable_update_check = {{ nomad_disable_update_check | lower }}
+
+{% if nomad_server_mode | lower == 'true' %}
+server {
+  enabled          = true
+{% if play_hosts | length > 0 %}
+  bootstrap_expect = {{ play_hosts | length }}
+{% else %}
+  bootstrap_expect = {{ nomad_bootstrap_expect }}
+{% endif %}
+}
+{% else %}
+client {
+  enabled          = true
+{% if nomad_nomad_cluster | length > 0 %}
+  servers          = ["{{ nomad_nomad_cluster | join('"') }}"]
+{% endif %}
+}
+{% endif %}

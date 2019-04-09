@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+[Unit]
+Description=nomad server service
+Documentation=http://www.nomad.io
+After=network.target
+
+[Service]
+EnvironmentFile={{ nomad_sysconfig }}
+
+Environment=GOMAXPROCS=2
+Restart=on-failure
+KillSignal=SIGTERM
+
+#ExecStart=/usr/local/bin/nomad agent $OPTIONS -data-dir=/var/lib/nomad -config=/etc/nomad.hcl
+ExecStart=/usr/local/bin/nomad agent $OPTIONS -data-dir=/var/lib/nomad
+ExecReload=/usr/local/bin/nomad reload
+
+[Install]
+WantedBy=multi-user.target
+
