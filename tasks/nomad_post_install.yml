@@ -1,0 +1,19 @@
+---
+
+- name: Sysconfig nomad file
+  template: src=nomad.sysconfig.j2 dest={{ nomad_sysconfig }}
+  notify: restart nomad
+
+- name: Main nomad configuration file
+  template: src=nomad.hcl.j2 dest=/etc/nomad.d/nomad.hcl
+  notify: restart nomad
+
+- name: Consul monitoring
+  when:
+    - configure_consul == true
+  template: src=service.consul.json.j2 dest={{ nomad_consul_services_path }}/{{ item.service.name }}.json
+  with_items: "{{ nomad_consul }}"
+  notify: reload consul
+
+- name: Autostart nomad
+  service: name=nomad state=started enabled=yes

@@ -1,0 +1,16 @@
+---
+
+- name: reload firewalld
+  command: firewall-cmd --reload
+
+- name: restart nomad
+  service: name=nomad state=restarted enabled=yes
+
+- name: reload systemd
+  shell: systemctl daemon-reload
+
+- name: reload consul
+  command: "{{ consul_bin }} reload"
+
+- name: restart telegraf
+  service: name=telegraf state=restarted

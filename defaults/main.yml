@@ -1,0 +1,40 @@
+---
+
+nomad_http_proxy: ""
+nomad_package_state: present # latest
+nomad_nomad_version: 0.8.7
+nomad_nomad_repo_url: https://releases.hashicorp.com/nomad
+nomad_nomad_bin_zip_url: "{{ nomad_nomad_repo_url }}/{{ nomad_nomad_version }}/nomad_{{ nomad_nomad_version }}_linux_amd64.zip"
+
+# Packaging
+cache_timeout: 600
+
+nomad_server_mode: false
+nomad_nomad_bootstrap: false
+nomad_nomad_cluster: []
+
+nomad_bind_address: 0.0.0.0
+
+nomad_nomad_region: france
+nomad_nomad_datacenter: dc1
+
+nomad_disable_update_check: true
+
+nomad_config_consul: true
+nomad_consul_services_path: /etc/consul.d
+
+nomad_consul:
+    - service:
+        name: "nomad-ui"
+        tags:
+            - "nomad"
+            - "traefik.enable=true"
+            - "traefik.backend.healthcheck.path=/ui/"
+            - "traefik.backend.loadbalancer.stickiness=true"
+        port: 4646
+        enable_tag_override: false
+        checks:
+            - http: "http://0.0.0.0:4646"
+              interval: "60s"
+
+nomad_bootstrap_expect: 0

@@ -1,0 +1,47 @@
+---
+
+- name: Check de la presence actuelle de nomad
+  stat: path={{ nomad_install_prefix }}/nomad get_checksum=no
+  register: nomad_bin_stats
+
+- name: Check de la version de nomad
+  shell: >
+    "{{ nomad_install_prefix }}"/nomad --version \
+    | awk -Fv '/^Nomad/ {print $2}'
+  register: nomad_bin_version
+  when:
+    - nomad_bin_stats.stat.exists
+
+- name: Recuperation de la derniere version en ligne
+  run_once: true
+  shell: >
+    curl \
+        {% if nomad_http_proxy is defined %}-x {{ nomad_http_proxy }}{% endif %} \
+        -s https://releases.hashicorp.com/nomad/ \
+        | awk -F = '/nomad_/ {gsub("\>.+$","");gsub("\"","");print $2}' \
+        | head -n 1|awk -F/ '{print $3}'
+  register: last_version
+  when: nomad_package_state == 'latest'
+
+- set_fact:
+    configure_consul: false
+
+- name: Check if consul is running
+  shell: systemctl is-active consul 2>/dev/null || echo ko && exit 0
+  register: consul_service
+
+- name: Create consul_bin variable
+  when:
+    - nomad_config_consul == true
+  block:
+    - name: Récupération du path de la commande consul
+      shell: systemctl show -p ExecStart consul|tr ' ' '\n'|awk -F= '/path=/ {print $2}'
+      register: consul_bin_path
+
+    - set_fact: consul_bin="{{ consul_bin_path.stdout }}"
+
+    - set_fact: configure_consul=true
+      when:
+        - consul_service.stdout.find('active') > -1
+        - nomad_config_consul | lower == 'true'
+        - nomad_server_mode | lower == 'true'

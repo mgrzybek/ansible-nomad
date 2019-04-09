@@ -1,0 +1,8 @@
+---
+
+nomad_distro_packages:
+  - unzip
+
+nomad_sysconfig: /etc/default/nomad
+
+nomad_install_prefix: /usr/local/bin

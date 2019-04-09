@@ -1,0 +1,25 @@
+---
+# tasks file for ansible-gend-logs
+
+- name: OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+    - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+    - "{{ ansible_distribution | lower }}.yml"
+    - "{{ ansible_os_family | lower }}.yml"
+  tags:
+    - always
+
+- include: nomad_pre_install.yml
+  tags:
+    - nomad-pre-install
+
+- include: nomad_install.yml
+  tags:
+    - nomad-install
+
+- include: nomad_post_install.yml
+  tags:
+    - nomad-post-install
