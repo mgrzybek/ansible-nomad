@@ -15,39 +15,41 @@
     - install-yum
     - install-zypper
 
-###########################
-# Recuperation du binaire
+##############################
+# Get the binary from internet
 
-- name: Get nomad binary (last version is {{ last_version.stdout }})
-  when:
-    - nomad_package_state == 'latest'
-    - nomad_bin_version.stdout|default('') != last_version.stdout
-  get_url:
-    url: "{{ nomad_nomad_repo_url }}/{{ last_version.stdout }}/nomad_{{ last_version.stdout }}_linux_amd64.zip"
-    dest: "/tmp/nomad_bin.zip"
-  environment:
-    https_proxy: "{{ nomad_http_proxy }}"
+- name: Get the binary from internet
+  block:
+    - name: Get nomad binary (last version is {{ last_version.stdout }})
+      when:
+        - nomad_package_state == 'latest'
+        - nomad_bin_version.stdout|default('') != last_version.stdout
+      get_url:
+        url: "{{ nomad_nomad_repo_url }}/{{ last_version.stdout }}/nomad_{{ last_version.stdout }}_linux_amd64.zip"
+        dest: "/tmp/nomad_bin.zip"
+      environment:
+        https_proxy: "{{ nomad_http_proxy }}"
 
-- name: Get nomad binary (given version is {{ nomad_nomad_version }})
-  when:
-    - nomad_package_state == 'present'
-    - nomad_bin_version.stdout|default('') != nomad_nomad_version
-  get_url:
-    url: "{{ nomad_nomad_bin_zip_url }}"
-    dest: "/tmp/nomad_bin.zip"
-  environment:
-    https_proxy: "{{ nomad_http_proxy }}"
+    - name: Get nomad binary (given version is {{ nomad_nomad_version }})
+      when:
+        - nomad_package_state == 'present'
+        - nomad_bin_version.stdout|default('') != nomad_nomad_version
+      get_url:
+        url: "{{ nomad_nomad_bin_zip_url }}"
+        dest: "/tmp/nomad_bin.zip"
+      environment:
+        https_proxy: "{{ nomad_http_proxy }}"
 
-###########################
-# Installation du binaire
+####################
+# Install the binary
 
 - name: Binary installation
   when:
     - nomad_bin_stats.stat.exists == false
   unarchive: src="/tmp/nomad_bin.zip" dest=/usr/local/bin/ mode=0755 copy=no
 
-#############################################
-# Création des répertoires et service systemd
+################################################
+# Create directories and configuration artifacts
 
 - name: Nomad directories
   file: path={{ item }} state=directory
