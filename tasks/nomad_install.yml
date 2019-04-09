@@ -18,7 +18,7 @@
 ###########################
 # Recuperation du binaire
 
-- name: Get nomad binary (last version: {{ last_version.stdout }})
+- name: Get nomad binary (last version is {{ last_version.stdout }})
   when:
     - nomad_package_state == 'latest'
     - nomad_bin_version.stdout|default('') != last_version.stdout
@@ -28,7 +28,7 @@
   environment:
     https_proxy: "{{ nomad_http_proxy }}"
 
-- name: Get nomad binary (given version: {{ nomad_nomad_version }})
+- name: Get nomad binary (given version is {{ nomad_nomad_version }})
   when:
     - nomad_package_state == 'present'
     - nomad_bin_version.stdout|default('') != nomad_nomad_version
