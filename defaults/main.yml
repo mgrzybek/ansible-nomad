@@ -20,10 +20,10 @@ nomad_nomad_datacenter: dc1
 
 nomad_disable_update_check: true
 
-nomad_config_consul: true
+nomad_config_consul_ui: true
 nomad_consul_services_path: /etc/consul.d
 
-nomad_consul:
+nomad_consul_ui:
     - service:
         name: "nomad-ui"
         tags:
