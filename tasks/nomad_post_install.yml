@@ -12,7 +12,7 @@
   when:
     - configure_nomad_ui | lower == 'true'
   template: src=service.consul.json.j2 dest={{ nomad_consul_services_path }}/{{ item.service.name }}.json
-  with_items: "{{ nomad_consul_ui }}"
+  with_items: "{{ nomad_nomad_ui }}"
   notify: reload consul
 
 - name: Autostart nomad
