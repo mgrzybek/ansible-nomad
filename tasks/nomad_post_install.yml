@@ -10,7 +10,7 @@
 
 - name: Consul monitoring
   when:
-    - configure_consul_ui | lower == 'true'
+    - configure_nomad_ui | lower == 'true'
   template: src=service.consul.json.j2 dest={{ nomad_consul_services_path }}/{{ item.service.name }}.json
   with_items: "{{ nomad_consul_ui }}"
   notify: reload consul
