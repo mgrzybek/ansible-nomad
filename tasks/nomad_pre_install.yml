@@ -40,8 +40,10 @@
       shell: systemctl show -p ExecStart consul|tr ' ' '\n'|awk -F= '/path=/ {print $2}'
       register: consul_bin_path
 
-    - set_fact: consul_bin="{{ consul_bin_path.stdout }}"
+    - name: Set consul bin path
+      set_fact: consul_bin="{{ consul_bin_path.stdout }}"
 
-    - set_fact: configure_consul_ui=true
+    - name: Activate consul ui
+      set_fact: configure_consul_ui=true
       when:
         - consul_service.stdout.find('ko') < 0
