@@ -24,7 +24,8 @@
         | awk -F = '/nomad_/ {gsub("\>.+$","");gsub("\"","");print $2}' \
         | head -n 1|awk -F/ '{print $3}'
 
-- set_fact:
+- name: Set local facts
+  set_fact:
     configure_nomad_ui: false
 
 - name: Check running services
