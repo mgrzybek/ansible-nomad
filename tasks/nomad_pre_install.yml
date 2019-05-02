@@ -43,7 +43,8 @@
     - name: Set consul bin path
       set_fact: consul_bin="{{ consul_bin_path.stdout }}"
 
-    - name: Activate consul ui
+    - name: Activate nomad ui
       set_fact: configure_nomad_ui=true
       when:
-        - ansible_facts.services.consul is defined
+        - nomad_config_nomad_ui | lower == 'true'
+
