@@ -33,7 +33,7 @@
 
 - name: Create consul_bin variable
   when:
-    - nomad_config_consul_ui | lower == 'true'
+    - nomad_config_nomad_ui | lower == 'true'
     - nomad_server_mode | lower == 'true'
   block:
     - name: Récupération du path de la commande consul
