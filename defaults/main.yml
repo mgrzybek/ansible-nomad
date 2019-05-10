@@ -19,6 +19,7 @@ nomad_nomad_region: france
 nomad_nomad_datacenter: dc1
 
 nomad_disable_update_check: true
+nomad_service_enabled: yes
 
 nomad_config_nomad_ui: true
 nomad_consul_services_path: /etc/consul.d

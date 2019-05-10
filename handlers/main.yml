@@ -4,7 +4,7 @@
   command: firewall-cmd --reload
 
 - name: restart nomad
-  service: name=nomad state=restarted enabled=yes
+  service: name=nomad state=restarted enabled={{ nomad_service_enabled }}
 
 - name: reload systemd
   systemd: daemon_reload=yes

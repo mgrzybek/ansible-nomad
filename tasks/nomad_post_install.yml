@@ -16,4 +16,4 @@
   notify: reload consul
 
 - name: Autostart nomad
-  service: name=nomad state=started enabled=yes
+  service: name=nomad state=started enabled={{ nomad_service_enabled }}
