@@ -1,6 +1,9 @@
 ---
 
 nomad_http_proxy: ""
+nomad_https_proxy: "{{ nomad_http_proxy }}"
+nomad_http_no_proxy: ""
+
 nomad_package_state: present # latest
 nomad_nomad_version: 0.8.7
 nomad_nomad_repo_url: https://releases.hashicorp.com/nomad

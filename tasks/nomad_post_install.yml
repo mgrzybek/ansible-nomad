@@ -8,6 +8,30 @@
   template: src=nomad.hcl.j2 dest=/etc/nomad.d/nomad.hcl
   notify: restart nomad
 
+- name: Creates systemd service files
+  when: nomad_http_proxy != None or nomad_https_proxy != None or nomad_http_no_proxy != None
+  block:
+    - name: Creates /etc/systemd/system/nomad.service.d
+      file: path=/etc/systemd/system/nomad.service.d state=directory
+
+    - name: Creates http proxy configuration file
+      template: src=http-options.conf.j2 dest=/etc/systemd/system/nomad.service.d/http-options.conf
+      notify:
+        - reload systemd
+        - restart nomad service
+        - restart nomad resource
+
+- name: Removes proxy configuration
+  file: path=/etc/systemd/systemd/nomad.service.d/http-options.conf state=absent
+  notify:
+    - reload systemd
+    - restart nomad service
+    - restart nomad resource
+  when:
+    - nomad_http_proxy == None
+    - nomad_https_proxy == None
+    - nomad_http_no_proxy == None
+
 - name: Consul monitoring
   when:
     - configure_nomad_ui | lower == 'true'
