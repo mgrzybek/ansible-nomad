@@ -2,11 +2,11 @@
 
 - name: Sysconfig nomad file
   template: src=nomad.sysconfig.j2 dest={{ nomad_sysconfig }}
-  notify: restart nomad
+  notify: restart nomad service
 
 - name: Main nomad configuration file
   template: src=nomad.hcl.j2 dest=/etc/nomad.d/nomad.hcl
-  notify: restart nomad
+  notify: restart nomad service
 
 - name: Creates systemd service files
   when: nomad_http_proxy != None or nomad_https_proxy != None or nomad_http_no_proxy != None
@@ -19,14 +19,14 @@
       notify:
         - reload systemd
         - restart nomad service
-        - restart nomad resource
+        #- restart nomad resource
 
 - name: Removes proxy configuration
   file: path=/etc/systemd/systemd/nomad.service.d/http-options.conf state=absent
   notify:
     - reload systemd
     - restart nomad service
-    - restart nomad resource
+    #- restart nomad resource
   when:
     - nomad_http_proxy == None
     - nomad_https_proxy == None

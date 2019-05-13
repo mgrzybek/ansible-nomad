@@ -3,7 +3,7 @@
 - name: reload firewalld
   command: firewall-cmd --reload
 
-- name: restart nomad
+- name: restart nomad service
   service: name=nomad state=restarted enabled={{ nomad_service_enabled }}
 
 - name: reload systemd
