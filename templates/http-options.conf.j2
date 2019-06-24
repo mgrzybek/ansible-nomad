@@ -1,3 +1,3 @@
 # {{ ansible_managed }}
 [Service]
-Environment={% if nomad_http_proxy is defined %}"HTTP_PROXY={{ nomad_http_proxy }} http_proxy={{ nomad_http_proxy }}"{% endif %} {% if nomad_https_proxy is defined %}"HTTPS_PROXY={{ nomad_https_proxy }} https_proxy={{ nomad_https_proxy }}"{% endif %} {% if nomad_http_no_proxy is defined %}"NO_PROXY={{ nomad_http_no_proxy }} no_proxy={{ nomad_http_no_proxy }}"{% endif %}
+Environment={% if nomad_http_proxy is defined %}"HTTP_PROXY={{ nomad_http_proxy }}" "http_proxy={{ nomad_http_proxy }}"{% endif %} {% if nomad_https_proxy is defined %}"HTTPS_PROXY={{ nomad_https_proxy }}" "https_proxy={{ nomad_https_proxy }}"{% endif %} {% if nomad_http_no_proxy is defined %}"NO_PROXY={{ nomad_http_no_proxy }}" "no_proxy={{ nomad_http_no_proxy }}"{% endif %}
