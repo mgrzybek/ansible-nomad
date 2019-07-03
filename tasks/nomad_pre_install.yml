@@ -48,3 +48,13 @@
       when:
         - nomad_config_nomad_ui | lower == 'true'
 
+- name: Check telegraf
+  register: telegraf_service
+  shell: systemctl is-active telegraf 2>/dev/null || echo ko && exit 0
+
+- when:
+    - telegraf_service.stdout.find('ko') < 0
+    - nomad_config_telegraf | lower == 'true'
+  set_fact:
+    configure_telegraf: true
+

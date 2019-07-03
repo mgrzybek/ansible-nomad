@@ -9,6 +9,8 @@ nomad_nomad_version: 0.8.7
 nomad_nomad_repo_url: https://releases.hashicorp.com/nomad
 nomad_nomad_bin_zip_url: "{{ nomad_nomad_repo_url }}/{{ nomad_nomad_version }}/nomad_{{ nomad_nomad_version }}_linux_amd64.zip"
 
+nomad_config_telegraf: true
+
 # Packaging
 cache_timeout: 600
 

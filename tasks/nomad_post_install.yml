@@ -32,6 +32,12 @@
     - nomad_https_proxy == None
     - nomad_http_no_proxy == None
 
+- name: Telegraf configuration
+  when:
+    - configure_telegraf == true
+  notify: restart telegraf
+  template: src=nomad.telegraf.conf.j2 dest=/etc/telegraf/telegraf.d/nomad.conf
+
 - name: Consul monitoring
   when:
     - configure_nomad_ui | lower == 'true'
