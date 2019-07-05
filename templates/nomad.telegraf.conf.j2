@@ -37,3 +37,7 @@
   ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_INPUT.md
   data_format = "json"
 
+[[inputs.prometheus]]
+  urls = [
+    "http://127.0.0.1:4646/v1/metrics?format=prometheus"
+  ]
