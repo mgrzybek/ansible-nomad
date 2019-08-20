@@ -38,7 +38,7 @@
     version_to_install: "{{ nomad_nomad_version }}"
     install_nomad: true
 
-- name: version to install = {{ last_version.stdout }}, install_nomadl = true
+- name: version to install = {{ last_version.stdout }}, install_nomad = true
   when: nomad_bin_version.stdout | default('') != last_version.stdout or not nomad_bin_version is defined
   set_fact:
     version_to_install: "{{ last_version.stdout }}"
