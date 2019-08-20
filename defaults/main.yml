@@ -13,15 +13,25 @@ nomad_config_telegraf: true
 
 # ACL
 nomad_enable_acl: false
+nomad_acl_create_env_file: true
+nomad_acl_store_consul_kv: false
 
 nomad_infrastructure_policy:
     Name: infrastructure
     Description: Agent and node management
-    Rules:
-        agent:
-            policy: write
-        node:
-            policy: write
+    Rules: "
+        agent {
+            policy = \"write\"
+        }
+        node {
+            policy = \"write\"
+        }
+    "
+
+nomad_operator_policy:
+    Name: job-ops
+    Description: Job management
+    Rules: "namespace \"jobs\" {\n\tpolicy = \"write\"\n}\n\n"
 
 # Packaging
 cache_timeout: 600

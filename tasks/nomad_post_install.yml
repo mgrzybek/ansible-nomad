@@ -65,17 +65,50 @@
       block:
         - name: Set accessor_id and secret_id facts
           set_fact:
-            accessor_id: "{{ nomad_bootstrap.stdout_lines[0] | regex_replace('Accessor ID  = ', '') }}"
-            secret_id: "{{ nomad_bootstrap.stdout_lines[1] | regex_replace('Secret ID  = ', '') }}"
+            accessor_id: "{{ nomad_bootstrap.stdout_lines[0] | regex_replace('Accessor ID\\s+= ', '') }}"
+            secret_id: "{{ nomad_bootstrap.stdout_lines[1] | regex_replace('Secret ID\\s+= ', '') }}"
 
         - name: Create infrastructure policy
           uri:
-            url: http://127.0.0.1:4646/v1/acl/policy/infrastructure
+            url: http://127.0.0.1:4646/v1/acl/policy/{{ nomad_infrastructure_policy.Name }}
             method: POST
             body_format: json
             body: "{{ nomad_infrastructure_policy | to_json }}"
             validate_certs: no
             status_code:
-                - 201
+                - 200
             headers:
-                X-Nomad-Token: "{{ accessor_id }}"
+                X-Nomad-Token: "{{ secret_id }}"
+
+        - name: Create operator policy
+          uri:
+            url: http://127.0.0.1:4646/v1/acl/policy/{{ nomad_operator_policy.Name }}
+            method: POST
+            body_format: json
+            body: "{{ nomad_operator_policy | to_json }}"
+            validate_certs: no
+            status_code:
+                - 200
+            headers:
+                X-Nomad-Token: "{{ secret_id }}"
+
+        # TODO: set a local fact in pre_install to manage this
+        - name: Create an env file containing the token
+          when:
+            - nomad_acl_create_env_file | lower == 'true'
+          block:
+            - name: Create .nomad.env
+              file:
+                path: "{{ lookup('env', 'HOME') }}/.nomad.env"
+                state: touch
+
+            - name: Create an env file containing the token
+              lineinfile:
+                path: "{{ lookup('env', 'HOME') }}/.nomad.env"
+                state: present
+                regexp: "^$"
+                line: "NOMAD_TOKEN={{ secret_id }}"
+
+        - name: Store the bootstrap token into consul
+          when: nomad_acl_store_consul_kv | lower == 'true'
+          command: consul kv put nomad/bootstrap_token {{ secret_id }}
