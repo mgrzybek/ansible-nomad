@@ -1,5 +1,11 @@
 ---
 
+- name: Set local facts
+  set_fact:
+    configure_nomad_ui: false
+    configure_telegraf: false
+    install_nomad: false
+
 - name: Check if Nomad already exists
   stat: path={{ nomad_install_prefix }}/nomad get_checksum=no
   register: nomad_bin_stats
@@ -24,9 +30,19 @@
         | awk -F = '/nomad_/ {gsub("\>.+$","");gsub("\"","");print $2}' \
         | head -n 1|awk -F/ '{print $3}'
 
-- name: Set local facts
+- name: Set facts (version to install = {{ nomad_nomad_version }}, install_nomad = true)
+  when:
+    - nomad_package_state == 'present'
+    - nomad_bin_version.stdout | default('') != nomad_nomad_version or not nomad_bin_version is defined
   set_fact:
-    configure_nomad_ui: false
+    version_to_install: "{{ nomad_nomad_version }}"
+    install_nomad: true
+
+- name: version to install = {{ last_version.stdout }}, install_nomadl = true
+  when: nomad_bin_version.stdout | default('') != last_version.stdout or not nomad_bin_version is defined
+  set_fact:
+    version_to_install: "{{ last_version.stdout }}"
+    install_nomad: true
 
 - name: Check running services
   service_facts:

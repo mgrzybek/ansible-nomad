@@ -18,35 +18,27 @@
 ##############################
 # Get the binary from internet
 
-- name: Get the binary from internet
+- name: Install nomad
+  when: install_nomad == true
   block:
-    - name: Get nomad binary (last version is {{ last_version.stdout }})
-      when:
-        - nomad_package_state == 'latest'
-        - nomad_bin_version.stdout|default('') != last_version.stdout
+    - name: Get binary ({{ version_to_install }})
+      register: get_binary
+      until: get_binary is success
+      retries: 5
+      delay: 10
       get_url:
-        url: "{{ nomad_nomad_repo_url }}/{{ last_version.stdout }}/nomad_{{ last_version.stdout }}_linux_amd64.zip"
+        url: "{{ nomad_nomad_repo_url }}/{{ version_to_install }}/nomad_{{ version_to_install }}_linux_amd64.zip"
         dest: "/tmp/nomad_bin.zip"
       environment:
-        https_proxy: "{{ nomad_http_proxy }}"
+        http_proxy: "{{ nomad_http_proxy }}"
+        https_proxy: "{{ nomad_https_proxy }}"
 
-    - name: Get nomad binary (given version is {{ nomad_nomad_version }})
-      when:
-        - nomad_package_state == 'present'
-        - nomad_bin_version.stdout|default('') != nomad_nomad_version
-      get_url:
-        url: "{{ nomad_nomad_bin_zip_url }}"
-        dest: "/tmp/nomad_bin.zip"
-      environment:
-        https_proxy: "{{ nomad_http_proxy }}"
+    - name: Install binary
+      unarchive: src="/tmp/nomad_bin.zip" dest=/usr/local/bin/ mode=0755 copy=no
+      notify: restart nomad service
 
-####################
-# Install the binary
-
-- name: Binary installation
-  when:
-    - nomad_bin_stats.stat.exists == false
-  unarchive: src="/tmp/nomad_bin.zip" dest=/usr/local/bin/ mode=0755 copy=no
+    - name: Cleanup
+      file: path="/tmp/nomad_bin.zip" state=absent
 
 ################################################
 # Create directories and configuration artifacts
