@@ -47,3 +47,35 @@
 
 - name: Autostart nomad
   service: name=nomad state=started enabled={{ nomad_service_enabled }}
+
+# https://www.fpcomplete.com/blog/2018/05/controlling-access-to-nomad-clusters
+- name: ACL and policies configuration
+  when:
+    - nomad_enable_acl | lower == 'true'
+    - nomad_server_mode | lower == 'true'
+  run_once: true
+  block:
+    - name: Create the initial token (using consul lock)
+      command: consul lock nomad_acl_conf nomad acl bootstrap
+      until: nomad_bootstrap is success or nomad_bootstrap.stdout.find("no longer") > -1
+      register: nomad_bootstrap
+  
+    - name: Continue configuration when the token has been given
+      when: nomad_bootstrap is success
+      block:
+        - name: Set accessor_id and secret_id facts
+          set_fact:
+            accessor_id: "{{ nomad_bootstrap.stdout_lines[0] | regex_replace('Accessor ID  = ', '') }}"
+            secret_id: "{{ nomad_bootstrap.stdout_lines[1] | regex_replace('Secret ID  = ', '') }}"
+
+        - name: Create infrastructure policy
+          uri:
+            url: http://127.0.0.1:4646/v1/acl/policy/infrastructure
+            method: POST
+            body_format: json
+            body: "{{ nomad_infrastructure_policy | to_json }}"
+            validate_certs: no
+            status_code:
+                - 201
+            headers:
+                X-Nomad-Token: "{{ accessor_id }}"

@@ -11,6 +11,18 @@ nomad_nomad_bin_zip_url: "{{ nomad_nomad_repo_url }}/{{ nomad_nomad_version }}/n
 
 nomad_config_telegraf: true
 
+# ACL
+nomad_enable_acl: false
+
+nomad_infrastructure_policy:
+    Name: infrastructure
+    Description: Agent and node management
+    Rules:
+        agent:
+            policy: write
+        node:
+            policy: write
+
 # Packaging
 cache_timeout: 600
 
