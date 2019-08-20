@@ -61,7 +61,7 @@
       register: nomad_bootstrap
   
     - name: Continue configuration when the token has been given
-      when: nomad_bootstrap is success
+      when: nomad_bootstrap.stdout_lines | length > 2
       block:
         - name: Set accessor_id and secret_id facts
           set_fact:
