@@ -33,6 +33,12 @@ nomad_operator_policy:
     Description: Job management
     Rules: "namespace \"jobs\" {\n\tpolicy = \"write\"\n}\n\n"
 
+# Vault
+nomad_enable_vault: false
+nomad_vault_url:
+nomad_vault_token:
+nomad_vault_role:
+
 # Packaging
 cache_timeout: 600
 

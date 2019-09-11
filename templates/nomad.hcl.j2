@@ -33,6 +33,17 @@ acl {
 }
 {% endif %}
 
+{% if nomad_enable_vault | lower == 'true' %}
+vault {
+	enabled          = true
+	address          = "{{ nomad_vault_url }}"
+	token            = "{{ nomad_vault_token }}"
+{% if nomad_vault_role | length > 0 %}
+	create_from_role = "{{ nomad_vault_role }}"
+{% endif %}
+}
+{% endif %}
+
 {% if configure_telegraf == true %}
 telemetry {
   publish_allocation_metrics = true

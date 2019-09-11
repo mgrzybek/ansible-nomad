@@ -46,8 +46,6 @@
     version_to_install: "{{ nomad_nomad_version }}"
     install_nomad: true
 
-
-
 - name: Check running services
   service_facts:
 

@@ -106,7 +106,7 @@
               lineinfile:
                 path: "{{ lookup('env', 'HOME') }}/.nomad.env"
                 state: present
-                regexp: "^$"
+                regexp: "^(NOMAD_TOKEN=.+){0,1}$"
                 line: "NOMAD_TOKEN={{ secret_id }}"
 
         - name: Store the bootstrap token into consul
