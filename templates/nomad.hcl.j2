@@ -38,7 +38,7 @@ vault {
 	enabled          = true
 	address          = "{{ nomad_vault_url }}"
 	token            = "{{ nomad_vault_token }}"
-{% if nomad_vault_role | length > 0 %}
+{% if nomad_vault_role | length > 0 and nomad_server_mode | lower == 'true' %}
 	create_from_role = "{{ nomad_vault_role }}"
 {% endif %}
 }
