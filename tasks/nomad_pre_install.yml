@@ -1,5 +1,17 @@
 ---
 
+- name: Check vault token
+  fail: msg="Vault is enabled but no token given"
+  when:
+    - nomad_vault_token | length == 0
+    - nomad_enable_vault | lower == 'true'
+
+- name: Check vault url
+  fail: msg="Vault is enabled but no url given"
+  when:
+    - nomad_vault_url | length == 0
+    - nomad_enable_vault | lower == 'true'
+
 - name: Set local facts
   set_fact:
     configure_nomad_ui: false
