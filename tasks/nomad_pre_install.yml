@@ -3,14 +3,14 @@
 - name: Check vault token
   fail: msg="Vault is enabled but no token given"
   when:
-    - nomad_vault_token | length == 0
     - nomad_enable_vault | lower == 'true'
+    - nomad_vault_token == None or nomad_vault_token | length == 0
 
 - name: Check vault url
   fail: msg="Vault is enabled but no url given"
   when:
-    - nomad_vault_url | length == 0
     - nomad_enable_vault | lower == 'true'
+    - nomad_vault_url == None or nomad_vault_url | length == 0
 
 - name: Set local facts
   set_fact:
