@@ -92,23 +92,5 @@
             headers:
                 X-Nomad-Token: "{{ secret_id }}"
 
-        # TODO: set a local fact in pre_install to manage this
-        - name: Create an env file containing the token
-          when:
-            - nomad_acl_create_env_file | lower == 'true'
-          block:
-            - name: Create .nomad.env
-              file:
-                path: "{{ lookup('env', 'HOME') }}/.nomad.env"
-                state: touch
-
-            - name: Create an env file containing the token
-              lineinfile:
-                path: "{{ lookup('env', 'HOME') }}/.nomad.env"
-                state: present
-                regexp: "^(NOMAD_TOKEN=.+){0,1}$"
-                line: "NOMAD_TOKEN={{ secret_id }}"
-
-        - name: Store the bootstrap token into consul
-          when: nomad_acl_store_consul_kv | lower == 'true'
-          command: consul kv put nomad/bootstrap_token {{ secret_id }}
+        - name: Store token
+          import_tasks: nomad_post_install_token.yml

@@ -1,5 +1,14 @@
 ---
 
+- fail: msg="Openstack credencials must be present"
+  when: (lookup('env', 'OS_USERNAME') is undefined
+    or lookup('env', 'OS_PASSWORD') is undefined
+    or lookup('env', 'OS_AUTH_URL') is undefined
+    or lookup('env', 'OS_PROJECT_ID') is undefined
+    or lookup('env', 'OS_USER_DOMAIN_NAME') is undefined)
+    and nomad_acl_store_swift | lower == 'true'
+    and nomad_enable_acl | lower == 'true'
+
 - name: Check vault token
   fail: msg="Vault is enabled but no token given"
   when:
