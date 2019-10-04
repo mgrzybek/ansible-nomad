@@ -25,4 +25,4 @@
 - name: Create a swift object containing the token
   when:
     - nomad_acl_store_swift | lower == 'true'
-  shell: echo {{ secret_id }} | swift upload --object-name=token nomad -
+  shell: echo {{ secret_id }} | swift upload --object-name=bootstrap_token nomad -
