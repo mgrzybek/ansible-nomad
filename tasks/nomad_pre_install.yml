@@ -12,6 +12,7 @@
 - name: Check vault token
   fail: msg="Vault is enabled but no token given"
   when:
+    - nomad_server_mode | lower == 'true'
     - nomad_enable_vault | lower == 'true'
     - nomad_vault_token == None or nomad_vault_token | length == 0
 
