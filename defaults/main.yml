@@ -71,4 +71,4 @@ nomad_nomad_ui:
             - http: "http://0.0.0.0:4646"
               interval: "60s"
 
-nomad_bootstrap_expect: 0
+nomad_bootstrap_expect: 

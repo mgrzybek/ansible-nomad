@@ -22,6 +22,13 @@
     - nomad_enable_vault | lower == 'true'
     - nomad_vault_url == None or nomad_vault_url | length == 0
 
+- name: Check nomad_bootstrap_expect
+  fail: msg="nomad_bootstrap_expect must be positive"
+  when:
+    - nomad_bootstrap_expect is defined
+    - nomad_bootstrap_expect | int == 0
+    - play_hosts | length == 0
+
 - name: Set local facts
   set_fact:
     configure_nomad_ui: false
