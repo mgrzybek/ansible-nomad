@@ -45,7 +45,7 @@
   register: nomad_bin_version
   shell: >
     "{{ nomad_install_prefix }}"/nomad --version \
-    | awk -Fv '/^Nomad/ {print $2}'
+    | awk '/^Nomad/ {gsub("v","");print $2}'
 
 - name: Deal with latest version
   when:
