@@ -15,6 +15,7 @@ nomad_config_telegraf: true
 nomad_enable_acl: false
 nomad_acl_create_env_file: true
 nomad_acl_store_consul_kv: false
+nomad_acl_store_swift: false
 
 nomad_infrastructure_policy:
     Name: infrastructure
@@ -61,10 +62,9 @@ nomad_nomad_ui:
     - service:
         name: "nomad-ui"
         tags:
-            - "nomad"
             - "traefik.enable=true"
-            - "traefik.backend.healthcheck.path=/ui/"
-            - "traefik.backend.loadbalancer.stickiness=true"
+            - "traefik.http.routers.nomad-ui.entrypoints=http"
+            - "traefik.http.routers.nomad-ui.rule=Host(`nomad`)"
         port: 4646
         enable_tag_override: false
         checks:
