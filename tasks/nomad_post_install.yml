@@ -34,7 +34,7 @@
 
 - name: Telegraf configuration
   when:
-    - configure_telegraf == true
+    - configure_telegraf | lower == 'true'
   notify: restart telegraf
   template: src=nomad.telegraf.conf.j2 dest=/etc/telegraf/telegraf.d/nomad.conf
 

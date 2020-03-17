@@ -19,7 +19,7 @@
 # Get the binary from internet
 
 - name: Install nomad
-  when: install_nomad == true
+  when: install_nomad | lower == 'true'
   block:
     - name: Get binary ({{ version_to_install }})
       register: get_binary
