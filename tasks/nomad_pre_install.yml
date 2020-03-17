@@ -1,6 +1,7 @@
 ---
 
-- fail: msg="Openstack credencials must be present"
+- name: Check Openstack credentials
+  fail: msg="Openstack credencials must be present"
   when: (lookup('env', 'OS_USERNAME') is undefined
     or lookup('env', 'OS_PASSWORD') is undefined
     or lookup('env', 'OS_AUTH_URL') is undefined
@@ -99,7 +100,8 @@
   register: telegraf_service
   shell: systemctl is-active telegraf 2>/dev/null || echo ko && exit 0
 
-- when:
+- name: Set local facts
+  when:
     - telegraf_service.stdout.find('ko') < 0
     - nomad_config_telegraf | lower == 'true'
   set_fact:

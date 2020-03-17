@@ -20,7 +20,7 @@
 - name: Store the bootstrap token into consul
   when:
     - nomad_acl_store_consul_kv | lower == 'true'
-  command: consul kv put nomad/bootstrap_token {{ secret_id }} 
+  command: consul kv put nomad/bootstrap_token {{ secret_id }}
 
 - name: Create a swift object containing the token
   when:

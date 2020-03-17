@@ -59,7 +59,7 @@
       command: consul lock nomad_acl_conf nomad acl bootstrap
       until: nomad_bootstrap is success or nomad_bootstrap.stdout.find("no longer") > -1
       register: nomad_bootstrap
-  
+
     - name: Continue configuration when the token has been given
       when: nomad_bootstrap.stdout_lines | length > 2
       block:
