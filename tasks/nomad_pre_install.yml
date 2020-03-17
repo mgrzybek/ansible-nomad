@@ -45,6 +45,7 @@
     - nomad_bin_stats.stat.exists
   register: nomad_bin_version
   shell: >
+    set -o pipefail ; \
     "{{ nomad_install_prefix }}"/nomad --version \
     | awk '/^Nomad/ {gsub("v","");print $2}'
 
