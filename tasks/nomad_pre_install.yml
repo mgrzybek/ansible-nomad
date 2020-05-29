@@ -26,6 +26,7 @@
 - name: Check nomad_bootstrap_expect
   fail: msg="nomad_bootstrap_expect must be positive"
   when:
+    - nomad_server_mode | lower == 'true'
     - nomad_bootstrap_expect is defined
     - nomad_bootstrap_expect | int == 0
     - play_hosts | length == 0
