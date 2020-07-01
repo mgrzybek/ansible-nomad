@@ -41,14 +41,20 @@
   stat: path={{ nomad_install_prefix }}/nomad get_checksum=no
   register: nomad_bin_stats
 
-- name: Check de la version de nomad
+- name: Get nomad version
   when:
     - nomad_bin_stats.stat.exists
-  register: nomad_bin_version
-  shell: >
-    set -o pipefail ; \
-    "{{ nomad_install_prefix }}"/nomad --version \
-    | awk '/^Nomad/ {gsub("v","");print $2}'
+  block:
+    - name: Get nomad version
+      register: nomad_shell_result
+      command: >
+        "{{ nomad_install_prefix }}"/nomad --version
+   
+    - name: Set nomad_bin_version fact
+      set_fact:
+         nomad_bin_version: "{{ nomad_shell_result.stdout 
+          | regex_replace('^Nomad v','') 
+          | regex_replace(' .+$','') }}"
 
 - name: Deal with latest version
   when:
@@ -65,7 +71,7 @@
             | head -n 1|awk -F/ '{print $3}'
 
     - name: version to install = {{ last_version.stdout }}, install_nomad = true
-      when: nomad_bin_version.stdout | default('') != last_version.stdout or not nomad_bin_version is defined
+      when: nomad_bin_version | default('') != last_version.stdout or not nomad_bin_version is defined
       set_fact:
         version_to_install: "{{ last_version.stdout }}"
         install_nomad: true
@@ -73,7 +79,7 @@
 - name: Set facts (version to install = {{ nomad_nomad_version }}, install_nomad = true)
   when:
     - nomad_package_state == 'present'
-    - nomad_bin_version.stdout | default('') != nomad_nomad_version or not nomad_bin_version is defined
+    - nomad_bin_version | default('') != nomad_nomad_version or not nomad_bin_version is defined
   set_fact:
     version_to_install: "{{ nomad_nomad_version }}"
     install_nomad: true
