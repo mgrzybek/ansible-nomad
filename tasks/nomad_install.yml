@@ -1,6 +1,6 @@
 ---
 
-- name: Packages install
+- name: Install | | Packages install
   package:
     name: "{{ nomad_distro_packages }}"
     state: "{{ nomad_package_state }}"
@@ -18,10 +18,10 @@
 ##############################
 # Get the binary from internet
 
-- name: Install nomad
+- name: Install | | Install nomad
   when: install_nomad | lower == 'true'
   block:
-    - name: Get binary ({{ version_to_install }})
+    - name: Install | | Get binary ({{ version_to_install }})
       register: get_binary
       until: get_binary is success
       retries: 5
@@ -33,22 +33,22 @@
         http_proxy: "{{ nomad_http_proxy }}"
         https_proxy: "{{ nomad_https_proxy }}"
 
-    - name: Install binary
+    - name: Install | | Install binary
       unarchive: src="/tmp/nomad_bin.zip" dest=/usr/local/bin/ mode=0755 copy=no
       notify: restart nomad service
 
-    - name: Cleanup
+    - name: Install | | Cleanup
       file: path="/tmp/nomad_bin.zip" state=absent
 
 ################################################
 # Create directories and configuration artifacts
 
-- name: Nomad directories
+- name: Install | | Nomad directories
   file: path={{ item }} state=directory
   with_items:
     - /etc/nomad.d
     - /var/lib/nomad
 
-- name: Systemd service file
+- name: Install | | Systemd service file
   template: src=nomad.service.j2 dest=/etc/systemd/system/nomad.service
   notify: reload systemd

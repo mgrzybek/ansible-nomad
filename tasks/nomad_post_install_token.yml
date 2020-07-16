@@ -1,28 +1,28 @@
 ---
 
 # TODO: set a local fact in pre_install to manage this
-- name: Create an env file containing the token
+- name: Post-Install | token | Create an env file containing the token
   when:
     - nomad_acl_create_env_file | lower == 'true'
   block:
-    - name: Create .nomad.env
+    - name: Post-Install | token | Create .nomad.env
       file:
         path: "{{ lookup('env', 'HOME') }}/.nomad.env"
         state: touch
 
-    - name: Create an env file containing the token
+    - name: Post-Install | token | Create an env file containing the token
       lineinfile:
         path: "{{ lookup('env', 'HOME') }}/.nomad.env"
         state: present
         regexp: "^(NOMAD_TOKEN=.+){0,1}$"
         line: "NOMAD_TOKEN={{ secret_id }}"
 
-- name: Store the bootstrap token into consul
+- name: Post-Install | token | Store the bootstrap token into consul
   when:
     - nomad_acl_store_consul_kv | lower == 'true'
   command: consul kv put nomad/bootstrap_token {{ secret_id }}
 
-- name: Create a swift object containing the token
+- name: Post-Install | token | Create a swift object containing the token
   when:
     - nomad_acl_store_swift | lower == 'true'
   shell: >
