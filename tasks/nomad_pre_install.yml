@@ -1,6 +1,6 @@
 ---
 
-- name: Pre-Install | | Check Openstack credentials
+- name: Pre-Install | Check Openstack credentials
   fail: msg="Openstack credencials must be present"
   when: (lookup('env', 'OS_USERNAME') is undefined
     or lookup('env', 'OS_PASSWORD') is undefined
@@ -10,20 +10,20 @@
     and nomad_acl_store_swift | lower == 'true'
     and nomad_enable_acl | lower == 'true'
 
-- name: Pre-Install | | Check vault token
+- name: Pre-Install | Check vault token
   fail: msg="Vault is enabled but no token given"
   when:
     - nomad_server_mode | lower == 'true'
     - nomad_enable_vault | lower == 'true'
     - nomad_vault_token == None or nomad_vault_token | length == 0
 
-- name: Pre-Install | | Check vault url
+- name: Pre-Install | Check vault url
   fail: msg="Vault is enabled but no url given"
   when:
     - nomad_enable_vault | lower == 'true'
     - nomad_vault_url == None or nomad_vault_url | length == 0
 
-- name: Pre-Install | | Check nomad_bootstrap_expect
+- name: Pre-Install | Check nomad_bootstrap_expect
   fail: msg="nomad_bootstrap_expect must be positive"
   when:
     - nomad_server_mode | lower == 'true'
@@ -31,36 +31,36 @@
     - nomad_bootstrap_expect | int == 0
     - play_hosts | length == 0
 
-- name: Pre-Install | | Set local facts
+- name: Pre-Install | Set local facts
   set_fact:
     configure_nomad_ui: false
     configure_telegraf: false
     install_nomad: false
 
-- name: Pre-Install | | Check if Nomad already exists
+- name: Pre-Install | Check if Nomad already exists
   stat: path={{ nomad_install_prefix }}/nomad get_checksum=no
   register: nomad_bin_stats
 
-- name: Pre-Install | | Get nomad version
+- name: Pre-Install | Get nomad version
   when:
     - nomad_bin_stats.stat.exists
   block:
-    - name: Pre-Install | | Get nomad version
+    - name: Pre-Install | Get nomad version
       register: nomad_shell_result
       command: >
         "{{ nomad_install_prefix }}"/nomad --version
    
-    - name: Pre-Install | | Set nomad_bin_version fact
+    - name: Pre-Install | Set nomad_bin_version fact
       set_fact:
          nomad_bin_version: "{{ nomad_shell_result.stdout 
           | regex_replace('^Nomad v','') 
           | regex_replace(' .+$','') }}"
 
-- name: Pre-Install | | Deal with latest version
+- name: Pre-Install | Deal with latest version
   when:
     - nomad_package_state | lower == 'latest'
   block:
-    - name: Pre-Install | | Get last online version number
+    - name: Pre-Install | Get last online version number
       run_once: true
       register: last_version
       shell: >
@@ -70,13 +70,13 @@
             | awk -F = '/nomad_/ {gsub("\>.+$","");gsub("\"","");print $2}' \
             | head -n 1|awk -F/ '{print $3}'
 
-    - name: Pre-Install | | version to install = {{ last_version.stdout }}, install_nomad = true
+    - name: Pre-Install | version to install = {{ last_version.stdout }}, install_nomad = true
       when: nomad_bin_version | default('') != last_version.stdout or not nomad_bin_version is defined
       set_fact:
         version_to_install: "{{ last_version.stdout }}"
         install_nomad: true
 
-- name: Pre-Install | | Set facts (version to install = {{ nomad_nomad_version }}, install_nomad = true)
+- name: Pre-Install | Set facts (version to install = {{ nomad_nomad_version }}, install_nomad = true)
   when:
     - nomad_package_state == 'present'
     - nomad_bin_version | default('') != nomad_nomad_version or not nomad_bin_version is defined
@@ -84,27 +84,27 @@
     version_to_install: "{{ nomad_nomad_version }}"
     install_nomad: true
 
-- name: Pre-Install | | Check running services
+- name: Pre-Install | Check running services
   service_facts:
 
-- name: Pre-Install | | Create consul_bin variable
+- name: Pre-Install | Create consul_bin variable
   when:
     - nomad_config_nomad_ui | lower == 'true'
     - nomad_server_mode | lower == 'true'
   block:
-    - name: Pre-Install | | Récupération du path de la commande consul
+    - name: Pre-Install | Récupération du path de la commande consul
       shell: systemctl show -p ExecStart consul|tr ' ' '\n'|awk -F= '/path=/ {print $2}'
       register: consul_bin_path
 
-    - name: Pre-Install | | Set consul bin path
+    - name: Pre-Install | Set consul bin path
       set_fact: consul_bin="{{ consul_bin_path.stdout }}"
 
-    - name: Pre-Install | | Activate nomad ui
+    - name: Pre-Install | Activate nomad ui
       set_fact: configure_nomad_ui=true
       when:
         - nomad_config_nomad_ui | lower == 'true'
 
-- name: Pre-Install | | Set local facts
+- name: Pre-Install | Set local facts
   when:
     - ansible_facts.services | map('quote') | join(',') | regex_search('telegraf')
     - nomad_config_telegraf | lower == 'true'
