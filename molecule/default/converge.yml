@@ -1,0 +1,13 @@
+- name: Converge
+  hosts: all
+  tasks:
+  - name: Include ../../..
+    include_role:
+      name: ../../..
+  vars:
+    nomad_http_proxy: "{{ lookup('env','http_proxy') }}"
+    nomad_https_proxy: "{{ lookup('env','https_proxy') }}"
+    nomad_http_no_proxy: "{{ lookup('env','no_proxy') }}"
+    nomad_server_mode: true
+    nomad_nomad_bootstrap: true
+    nomad_bootstrap_expect: 1

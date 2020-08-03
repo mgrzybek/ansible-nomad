@@ -1,0 +1,8 @@
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Test nomad status
+      command: nomad status
+
+    - name: Test nomad status
+      command: nomad node status
