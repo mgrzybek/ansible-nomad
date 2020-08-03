@@ -1,8 +1,10 @@
 ---
 
 nomad_distro_packages:
-  - unzip
+- nomad
 
 nomad_sysconfig: /etc/sysconfig/nomad
+nomad_conf_file: /etc/nomad.d/nomad.hcl
 
-nomad_install_prefix: /usr/local/bin
+nomad_rpm_key: https://apt.releases.hashicorp.com/gpg
+nomad_rpm_repo: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable

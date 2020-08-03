@@ -1,8 +1,10 @@
 ---
 
 nomad_distro_packages:
-  - unzip
+  - nomad
 
 nomad_sysconfig: /etc/default/nomad
+nomad_conf_file: /etc/nomad.d/nomad.hcl
 
-nomad_install_prefix: /usr/local/bin
+nomad_apt_key: https://apt.releases.hashicorp.com/gpg
+nomad_apt_repo: deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main

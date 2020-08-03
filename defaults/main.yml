@@ -5,7 +5,6 @@ nomad_https_proxy: "{{ nomad_http_proxy }}"
 nomad_http_no_proxy: ""
 
 nomad_package_state: present # latest
-nomad_nomad_version: 0.10.4
 nomad_nomad_repo_url: https://releases.hashicorp.com/nomad
 nomad_nomad_bin_zip_url: "{{ nomad_nomad_repo_url }}/{{ nomad_nomad_version }}/nomad_{{ nomad_nomad_version }}_linux_amd64.zip"
 

@@ -1,20 +1,39 @@
 # {{ ansible_managed }}
 [Unit]
-Description=nomad server service
-Documentation=http://www.nomad.io
-After=network.target
+Description=Nomad
+Documentation=https://nomadproject.io/docs/
+
+{% if use_consul == false %}
+Wants=network-online.target
+After=network-online.target
+{% else %}
+# When using Nomad with Consul it is not necessary to start Consul first. These
+# lines start Consul before Nomad as an optimization to avoid Nomad logging
+# that Consul is unavailable at startup.
+Wants=consul.service
+After=consul.service
+{% endif %}
 
 [Service]
 EnvironmentFile={{ nomad_sysconfig }}
 
-Environment=GOMAXPROCS=2
-Restart=on-failure
-KillSignal=SIGTERM
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/bin/nomad agent -config /etc/nomad.d $OPTIONS
 
-#ExecStart=/usr/local/bin/nomad agent $OPTIONS -data-dir=/var/lib/nomad -config=/etc/nomad.hcl
-ExecStart=/usr/local/bin/nomad agent $OPTIONS -data-dir=/var/lib/nomad
-ExecReload=/usr/local/bin/nomad reload
+KillMode=process
+KillSignal=SIGINT
+
+LimitNOFILE=65536
+LimitNPROC=infinity
+
+Restart=on-failure
+RestartSec=2
+
+StartLimitBurst=3
+StartLimitInterval=10
+
+TasksMax=infinity
+OOMScoreAdjust=-1000
 
 [Install]
 WantedBy=multi-user.target
-

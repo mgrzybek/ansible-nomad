@@ -35,79 +35,64 @@
   set_fact:
     configure_nomad_ui: false
     configure_telegraf: false
-    install_nomad: false
-
-- name: Pre-Install | Check if Nomad already exists
-  stat: path={{ nomad_install_prefix }}/nomad get_checksum=no
-  register: nomad_bin_stats
-
-- name: Pre-Install | Get nomad version
-  when:
-    - nomad_bin_stats.stat.exists
-  block:
-    - name: Pre-Install | Get nomad version
-      register: nomad_shell_result
-      command: >
-        "{{ nomad_install_prefix }}"/nomad --version
-   
-    - name: Pre-Install | Set nomad_bin_version fact
-      set_fact:
-         nomad_bin_version: "{{ nomad_shell_result.stdout 
-          | regex_replace('^Nomad v','') 
-          | regex_replace(' .+$','') }}"
-
-- name: Pre-Install | Deal with latest version
-  when:
-    - nomad_package_state | lower == 'latest'
-  block:
-    - name: Pre-Install | Get last online version number
-      run_once: true
-      register: last_version
-      shell: >
-        curl \
-            {% if nomad_http_proxy is defined %}-x {{ nomad_http_proxy }}{% endif %} \
-            -s https://releases.hashicorp.com/nomad/ \
-            | awk -F = '/nomad_/ {gsub("\>.+$","");gsub("\"","");print $2}' \
-            | head -n 1|awk -F/ '{print $3}'
-
-    - name: Pre-Install | version to install = {{ last_version.stdout }}, install_nomad = true
-      when: nomad_bin_version | default('') != last_version.stdout or not nomad_bin_version is defined
-      set_fact:
-        version_to_install: "{{ last_version.stdout }}"
-        install_nomad: true
-
-- name: Pre-Install | Set facts (version to install = {{ nomad_nomad_version }}, install_nomad = true)
-  when:
-    - nomad_package_state == 'present'
-    - nomad_bin_version | default('') != nomad_nomad_version or not nomad_bin_version is defined
-  set_fact:
-    version_to_install: "{{ nomad_nomad_version }}"
-    install_nomad: true
+    use_consul: false
 
 - name: Pre-Install | Check running services
   service_facts:
 
-- name: Pre-Install | Create consul_bin variable
+- name: Pre-Install | Activate nomad ui
   when:
     - nomad_config_nomad_ui | lower == 'true'
     - nomad_server_mode | lower == 'true'
-  block:
-    - name: Pre-Install | Récupération du path de la commande consul
-      shell: systemctl show -p ExecStart consul|tr ' ' '\n'|awk -F= '/path=/ {print $2}'
-      register: consul_bin_path
+  set_fact: configure_nomad_ui=true
 
-    - name: Pre-Install | Set consul bin path
-      set_fact: consul_bin="{{ consul_bin_path.stdout }}"
-
-    - name: Pre-Install | Activate nomad ui
-      set_fact: configure_nomad_ui=true
-      when:
-        - nomad_config_nomad_ui | lower == 'true'
-
-- name: Pre-Install | Set local facts
+- name: Pre-Install | Set local facts (configure_telegraf = true)
   when:
     - ansible_facts.services | map('quote') | join(',') | regex_search('telegraf')
     - nomad_config_telegraf | lower == 'true'
   set_fact:
     configure_telegraf: true
 
+- name: Pre-Install | Set local facts (use_consul = true)
+  when:
+    - ansible_facts.services | map('quote') | join(',') | regex_search('consul')
+  set_fact:
+    use_consul: true
+
+- name: Pre-Install | Declare APT repo
+  when: ansible_pkg_mgr | lower == 'apt'
+  block:
+  - name: Pre-Install | Add APT key (with proxy)
+    when:
+    - nomad_http_proxy != None
+    environment:
+      http_proxy: '{{ nomad_http_proxy }}'
+      https_proxy: '{{ nomad_https_proxy }}'
+      no_proxy: '{{ nomad_http_no_proxy }}'
+    apt_key:
+      url: '{{ nomad_apt_key }}'
+      state: present
+
+  - name: Pre-Install | Add APT key (with proxy)
+    when:
+    - nomad_http_proxy == None
+    apt_key:
+      url: '{{ nomad_apt_key }}'
+      state: present
+
+  - name: Pre-Install | Add APT repo
+    apt_repository:
+      repo: '{{ nomad_apt_repo }}'
+      state: present
+
+- name: Pre-Install | Declare RPM repo
+  when: ansible_pkg_mgr | lower == 'dnf' or ansible_pkg_mgr | lower == 'rpm'
+  block:
+  - name: Pre-Install | Add RPM repo
+    yum_repository:
+      name: hashicorp
+      description: Official Hashicorp RPM repository
+      baseurl: '{{ nomad_rpm_repo }}'
+      gpgkey: '{{ nomad_rpm_key }}'
+      state: present
+      proxy: "{{ nomad_http_proxy }}"

@@ -41,6 +41,7 @@
 - name: Post-Install | Consul monitoring
   when:
     - configure_nomad_ui | lower == 'true'
+    - use_consul | lower == 'true'
   template: src=service.consul.json.j2 dest={{ nomad_consul_services_path }}/{{ item.service.name }}.json
   with_items: "{{ nomad_nomad_ui }}"
   notify: reload consul
