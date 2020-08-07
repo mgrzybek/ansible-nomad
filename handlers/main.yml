@@ -10,7 +10,7 @@
   systemd: daemon_reload=yes
 
 - name: reload consul
-  command: "{{ consul_bin }} reload"
+  service: name=consul state=reloaded
 
 - name: restart telegraf
   service: name=telegraf state=restarted
