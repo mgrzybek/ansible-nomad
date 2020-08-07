@@ -10,7 +10,7 @@ disable_update_check = {{ nomad_disable_update_check | lower }}
 {% if nomad_server_mode | lower == 'true' %}
 server {
   enabled          = true
-{% if play_hosts | length > 0 %}
+{% if play_hosts | length > 0 and nomad_bootstrap_expect | length == 0 %}
   bootstrap_expect = {{ play_hosts | length }}
 {% else %}
   bootstrap_expect = {{ nomad_bootstrap_expect }}
