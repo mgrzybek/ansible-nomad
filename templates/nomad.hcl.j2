@@ -1,7 +1,6 @@
 # {{ ansible_managed }}
 data_dir  = "/var/lib/nomad"
 
-bind_addr  = "{{ nomad_bind_address }}"
 region     = "{{ nomad_nomad_region }}"
 datacenter = "{{ nomad_nomad_datacenter }}"
 
@@ -17,6 +16,10 @@ server {
 {% endif %}
 }
 {% else %}
+server {
+  enabled          = false
+}
+
 client {
   enabled          = true
 {% if nomad_nomad_cluster | length > 0 %}
@@ -24,6 +27,24 @@ client {
 {% endif %}
 }
 {% endif %}
+
+addresses {
+  http = "{{ nomad_address_http }}"
+  rpc  = "{{ nomad_address_rpc }}"
+  serf = "{{ nomad_address_serf }}"
+}
+
+advertise {
+{% if nomad_advertise_http != None and nomad_advertise_http | length > 0 %}
+  http = "{{ nomad_advertise_http }}"
+{% endif %}
+{% if nomad_advertise_rpc != None and nomad_advertise_rpc | length > 0 %}
+  rpc  = "{{ nomad_advertise_rpc }}"
+{% endif %}
+{% if nomad_advertise_ serf!= None and nomad_advertise_serf | length > 0 %}
+  serf = "{{ nomad_advertise_serf }}"
+{% endif %}
+}
 
 {% if nomad_enable_acl | lower == 'true' %}
 acl {

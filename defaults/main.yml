@@ -16,6 +16,15 @@ nomad_acl_create_env_file: true
 nomad_acl_store_consul_kv: false
 nomad_acl_store_swift: false
 
+nomad_address_http: 0.0.0.0
+nomad_address_rpc: 0.0.0.0
+nomad_address_serf: 0.0.0.0
+
+# Advertise
+nomad_advertise_http:
+nomad_advertise_rpc:
+nomad_advertise_serf: 
+
 nomad_infrastructure_policy:
     Name: infrastructure
     Description: Agent and node management
@@ -62,8 +71,7 @@ nomad_nomad_ui:
         name: "nomad-ui"
         tags:
             - "traefik.enable=true"
-            - "traefik.http.routers.nomad-ui.entrypoints=http"
-            - "traefik.http.routers.nomad-ui.rule=Host(`nomad`)"
+            - "traefik.http.routers.nomad-ui.rule=Headers(`X-Nomad-Token`)"
         port: 4646
         enable_tag_override: false
         checks:
