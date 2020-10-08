@@ -8,41 +8,41 @@ disable_update_check = {{ nomad_disable_update_check | lower }}
 
 {% if nomad_server_mode | lower == 'true' %}
 server {
-  enabled          = true
-{% if play_hosts | length > 0 and nomad_bootstrap_expect | length == 0 %}
-  bootstrap_expect = {{ play_hosts | length }}
-{% else %}
-  bootstrap_expect = {{ nomad_bootstrap_expect }}
-{% endif %}
+	enabled          = true
+	{% if play_hosts | length > 0 and nomad_bootstrap_expect | length == 0 %}
+	bootstrap_expect = {{ play_hosts | length }}
+	{% else %}
+	bootstrap_expect = {{ nomad_bootstrap_expect }}
+	{% endif %}
 }
 {% else %}
 server {
-  enabled          = false
+	enabled          = false
 }
 
 client {
-  enabled          = true
-{% if nomad_nomad_cluster | length > 0 %}
-  servers          = ["{{ nomad_nomad_cluster | join('"') }}"]
-{% endif %}
+	enabled          = true
+	{% if nomad_nomad_cluster | length > 0 %}
+	servers          = ["{{ nomad_nomad_cluster | join('"') }}"]
+	{% endif %}
 }
 {% endif %}
 
 addresses {
-  http = "{{ nomad_address_http }}"
-  rpc  = "{{ nomad_address_rpc }}"
-  serf = "{{ nomad_address_serf }}"
+	http = "{{ nomad_address_http }}"
+	rpc  = "{{ nomad_address_rpc }}"
+	serf = "{{ nomad_address_serf }}"
 }
 
 advertise {
 {% if nomad_advertise_http != None and nomad_advertise_http | length > 0 %}
-  http = "{{ nomad_advertise_http }}"
+	http = "{{ nomad_advertise_http }}"
 {% endif %}
 {% if nomad_advertise_rpc != None and nomad_advertise_rpc | length > 0 %}
-  rpc  = "{{ nomad_advertise_rpc }}"
+	rpc  = "{{ nomad_advertise_rpc }}"
 {% endif %}
-{% if nomad_advertise_ serf!= None and nomad_advertise_serf | length > 0 %}
-  serf = "{{ nomad_advertise_serf }}"
+{% if nomad_advertise_serf != None and nomad_advertise_serf | length > 0 %}
+	serf = "{{ nomad_advertise_serf }}"
 {% endif %}
 }
 
@@ -69,8 +69,8 @@ vault {
 
 {% if configure_telegraf == true %}
 telemetry {
-  publish_allocation_metrics = true
-  publish_node_metrics       = true
-  prometheus_metrics         = true
+	publish_allocation_metrics = true
+	publish_node_metrics       = true
+	prometheus_metrics         = true
 }
 {% endif %}

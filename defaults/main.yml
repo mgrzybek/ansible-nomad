@@ -16,6 +16,7 @@ nomad_acl_create_env_file: true
 nomad_acl_store_consul_kv: false
 nomad_acl_store_swift: false
 
+# Addresses
 nomad_address_http: 0.0.0.0
 nomad_address_rpc: 0.0.0.0
 nomad_address_serf: 0.0.0.0
