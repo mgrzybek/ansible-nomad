@@ -1,10 +1,11 @@
----
-
 nomad_distro_packages:
 - nomad
 
 nomad_sysconfig: /etc/sysconfig/nomad
 nomad_conf_file: /etc/nomad.d/nomad.hcl
+nomad_data_dir: /var/lib/nomad
 
 nomad_rpm_key: https://apt.releases.hashicorp.com/gpg
 nomad_rpm_repo: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable
+nomad_telegraf_conf_file: /etc/telegraf/telegraf.d/nomad.conf
+nomad_consul_services_path: /etc/consul.d

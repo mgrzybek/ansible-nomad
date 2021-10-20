@@ -1,12 +1,10 @@
----
-
-nomad_http_proxy: ""
-nomad_https_proxy: "{{ nomad_http_proxy }}"
-nomad_http_no_proxy: ""
+nomad_http_proxy: ''
+nomad_https_proxy: '{{ nomad_http_proxy }}'
+nomad_http_no_proxy: ''
 
 nomad_package_state: present # latest
 nomad_nomad_repo_url: https://releases.hashicorp.com/nomad
-nomad_nomad_bin_zip_url: "{{ nomad_nomad_repo_url }}/{{ nomad_nomad_version }}/nomad_{{ nomad_nomad_version }}_linux_amd64.zip"
+nomad_nomad_bin_zip_url: '{{ nomad_nomad_repo_url }}/{{ nomad_nomad_version }}/nomad_{{ nomad_nomad_version }}_linux_amd64.zip'
 
 nomad_config_telegraf: true
 
@@ -17,21 +15,14 @@ nomad_acl_store_consul_kv: false
 nomad_acl_store_swift: false
 
 nomad_infrastructure_policy:
-    Name: infrastructure
-    Description: Agent and node management
-    Rules: "
-        agent {
-            policy = \"write\"
-        }
-        node {
-            policy = \"write\"
-        }
-    "
+  Name: infrastructure
+  Description: Agent and node management
+  Rules: ' agent { policy = "write" } node { policy = "write" } '
 
 nomad_operator_policy:
-    Name: job-ops
-    Description: Job management
-    Rules: "namespace \"jobs\" {\n\tpolicy = \"write\"\n}\n\n"
+  Name: job-ops
+  Description: Job management
+  Rules: "namespace \"jobs\" {\n\tpolicy = \"write\"\n}\n\n"
 
 # Vault
 nomad_enable_vault: false
@@ -55,19 +46,18 @@ nomad_disable_update_check: true
 nomad_service_enabled: yes
 
 nomad_config_nomad_ui: true
-nomad_consul_services_path: /etc/consul.d
 
 nomad_nomad_ui:
-    - service:
-        name: "nomad-ui"
-        tags:
-            - "traefik.enable=true"
-            - "traefik.http.routers.nomad-ui.entrypoints=http"
-            - "traefik.http.routers.nomad-ui.rule=Host(`nomad`)"
-        port: 4646
-        enable_tag_override: false
-        checks:
-            - http: "http://0.0.0.0:4646"
-              interval: "60s"
+- service:
+    name: nomad-ui
+    tags:
+    - traefik.enable=true
+    - traefik.http.routers.nomad-ui.entrypoints=http
+    - traefik.http.routers.nomad-ui.rule=Host(`nomad`)
+    port: 4646
+    enable_tag_override: false
+    checks:
+    - http: http://0.0.0.0:4646
+      interval: 60s
 
-nomad_bootstrap_expect: 
+nomad_bootstrap_expect:

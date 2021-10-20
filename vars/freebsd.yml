@@ -1,0 +1,8 @@
+nomad_distro_packages:
+- nomad
+
+nomad_sysconfig: /etc/rc.conf.d/nomad
+nomad_conf_file: /usr/local/etc/nomad/nomad.hcl
+nomad_data_dir: /var/tmp/nomad
+nomad_telegraf_conf_file: /usr/local/etc/telegraf.d/nomad.conf
+nomad_consul_services_path: /usr/local/etc/consul.d

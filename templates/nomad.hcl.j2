@@ -1,11 +1,13 @@
 # {{ ansible_managed }}
-data_dir  = "/var/lib/nomad"
+data_dir  = "{{ nomad_data_dir }}"
 
 bind_addr  = "{{ nomad_bind_address }}"
 region     = "{{ nomad_nomad_region }}"
 datacenter = "{{ nomad_nomad_datacenter }}"
 
 disable_update_check = {{ nomad_disable_update_check | lower }}
+
+enable_syslog = true
 
 {% if nomad_server_mode | lower == 'true' %}
 server {
