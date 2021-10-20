@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
-data_dir  = "{{ nomad_data_dir }}"
+data_dir   = "{{ nomad_data_dir }}"
 
 region     = "{{ nomad_nomad_region }}"
 datacenter = "{{ nomad_nomad_datacenter }}"
@@ -11,11 +11,11 @@ enable_syslog = true
 {% if nomad_server_mode | lower == 'true' %}
 server {
 	enabled          = true
-	{% if play_hosts | length > 0 and nomad_bootstrap_expect | length == 0 %}
+{% if play_hosts | length > 0 and nomad_bootstrap_expect is undefined %}
 	bootstrap_expect = {{ play_hosts | length }}
-	{% else %}
+{% else %}
 	bootstrap_expect = {{ nomad_bootstrap_expect }}
-	{% endif %}
+{% endif %}
 }
 {% else %}
 server {
@@ -24,9 +24,9 @@ server {
 
 client {
 	enabled          = true
-	{% if nomad_nomad_cluster | length > 0 %}
+{% if nomad_nomad_cluster is defined and nomad_nomad_cluster | length > 0 %}
 	servers          = ["{{ nomad_nomad_cluster | join('"') }}"]
-	{% endif %}
+{% endif %}
 }
 {% endif %}
 
